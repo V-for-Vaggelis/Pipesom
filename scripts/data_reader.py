@@ -9,13 +9,12 @@ def read_data(filepath):
 
     import numpy as np
     import pandas as pd
-    from sklearn.preprocessing import minmax_scale, scale
+    from sklearn.preprocessing import MinMaxScaler, scale, StandardScaler, normalize
     import warnings
 
     data = pd.read_csv(filepath)
     feature_names = list(data.columns.values) #the headers
     X = data[feature_names].values #the data
-    X = scale(X) #normalizing
 
     def nans_to_mean(data):
         """ Replaces all naNs with the mean value
@@ -25,9 +24,7 @@ def read_data(filepath):
         OUTPUT: The array with it's mean value instead of naNs
         """
 
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore", category=RuntimeWarning)
-            mean = np.nanmean(data)
+        mean = np.nanmean(data)
         inds = np.where(np.isnan(data))
         data[inds] = mean
         return data
@@ -45,17 +42,23 @@ def read_data(filepath):
         return data
 
     # clear the data of naNs
-    clear_X = []
-    for feature in X:
-        ## TODO: Find a way to make meab replacement, or a better interpolation work
-        # new_feature = nans_to_mean(feature)
-        if not np.isfinite(feature).all():
-            new_feature = nans_to_zero(feature)
-            clear_X.append(new_feature)
-        else:
-            clear_X.append(feature)
+    for i,feature in enumerate(X.T):
 
-    return feature_names, clear_X
+        if not np.isfinite(feature).any(): #if all values are naNs drop it cause it creates problems
+            if __name__ == "__main__":
+                print("Dropping variable: {}".format(feature_names[i]))
+            del feature_names[i]
+            continue
+        if not np.isfinite(feature).all():
+            new_feature = nans_to_mean(feature)
+            X[:,i] = new_feature
+
+    # scale the data to avoid problems in training
+    scaler = MinMaxScaler((-1,1))
+    scaler.fit(X)
+    X = scaler.transform(X)
+
+    return feature_names, X
 
 
 
@@ -67,7 +70,7 @@ if __name__ == "__main__":
 
     headers, clear_X = read_data("Agias-Sofias_2018.csv")
     print(headers)
-    print(clear_X)
+    print(clear_X[:,0]) # this will be a training point
 
     count = 0
     for i,data in enumerate(clear_X):
