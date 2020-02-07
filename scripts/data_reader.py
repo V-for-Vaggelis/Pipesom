@@ -1,4 +1,11 @@
 def read_data(filepath):
+    """ Reads a csv file
+
+    INPUT: The file's relative path
+
+    OUTPUT: feature_names = names of the variables
+            clear_X = 2D array with all the data
+    """
 
     import numpy as np
     import pandas as pd
@@ -49,6 +56,9 @@ def read_data(filepath):
             clear_X.append(feature)
 
     return feature_names, clear_X
+
+
+
 
 
 # for debugging
