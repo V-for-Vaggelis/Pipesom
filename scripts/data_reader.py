@@ -1,10 +1,12 @@
-def read_data(filepath):
+def read_data(filepath, replace_nan, scale):
     """ Reads a csv file
 
-    INPUT: The file's relative path
+    INPUT: filepath -> The file's relative path
+           replace_nan -> type=boolean -> Wheter or not to replace the nan values
+           scale -> type = boolean -> Whether or not to scale the data
 
     OUTPUT: feature_names = names of the variables
-            clear_X = 2D array with all the data
+            X -> 2D array with all the data
     """
 
     import numpy as np
@@ -19,7 +21,7 @@ def read_data(filepath):
     def nans_to_mean(data):
         """ Replaces all naNs with the mean value
 
-        INPUT: An array containing naNs
+        INPUT: data -> An array containing naNs
 
         OUTPUT: The array with it's mean value instead of naNs
         """
@@ -32,7 +34,7 @@ def read_data(filepath):
     def nans_to_zero(data):
         """ Replaces all naNs with zero
 
-        INPUT: An array containing naNs
+        INPUT: data -> An array containing naNs
 
         OUTPUT: The array with zero instead of naNs
         """
@@ -42,21 +44,23 @@ def read_data(filepath):
         return data
 
     # clear the data of naNs
-    for i,feature in enumerate(X.T):
+    if replace_nan:
+        for i,feature in enumerate(X.T):
 
-        if not np.isfinite(feature).any(): #if all values are naNs drop it cause it creates problems
-            if __name__ == "__main__":
-                print("Dropping variable: {}".format(feature_names[i]))
-            del feature_names[i]
-            continue
-        if not np.isfinite(feature).all():
-            new_feature = nans_to_mean(feature)
-            X[:,i] = new_feature
+            if not np.isfinite(feature).any(): #if all values are naNs drop it cause it creates problems
+                if __name__ == "__main__":
+                    print("Dropping variable: {}".format(feature_names[i]))
+                del feature_names[i]
+                continue
+            if not np.isfinite(feature).all():
+                new_feature = nans_to_mean(feature)
+                X[:,i] = new_feature
 
     # scale the data to avoid problems in training
-    scaler = MinMaxScaler((-1,1))
-    scaler.fit(X)
-    X = scaler.transform(X)
+    if scale:
+        scaler = MinMaxScaler((-1,1))
+        scaler.fit(X)
+        X = scaler.transform(X)
 
     return feature_names, X
 
@@ -68,7 +72,7 @@ def read_data(filepath):
 if __name__ == "__main__":
     import numpy as np
 
-    headers, clear_X = read_data("Agias-Sofias_2018.csv")
+    headers, clear_X = read_data("Agias-Sofias_2018.csv", True, True)
     print(headers)
     print(clear_X[:,0]) # this will be a training point
 
