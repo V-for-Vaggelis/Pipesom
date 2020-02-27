@@ -38,5 +38,5 @@ def corr_mat(labels, values):
 from data_reader import read_data
 
 # headers, clear_X = read_data("Agias-Sofias_2018.csv", False, False)
-headers, clear_X = read_data("Auth_2018.csv", False, False)
+headers, clear_X, _ = read_data("Auth_2018.csv", False, False)
 img = corr_mat(headers, clear_X)

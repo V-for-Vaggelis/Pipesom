@@ -7,6 +7,7 @@ def read_data(filepath, replace_nan, scale):
 
     OUTPUT: feature_names = names of the variables
             X -> 2D array with all the data
+            droped_features = array with names of variables dropped before training
     """
 
     import numpy as np
@@ -17,6 +18,28 @@ def read_data(filepath, replace_nan, scale):
     data = pd.read_csv(filepath)
     feature_names = list(data.columns.values) #the headers
     X = data[feature_names].values #the data
+
+    # clear the data of nan
+    droped_features = []
+    if replace_nan:
+
+        del_indices = []
+        for i,variable in enumerate(X.T):
+
+            if np.isnan(variable).sum()/len(variable) >= 0.7: # if more than 50% is naN drop the feature
+
+                droped_features.append(feature_names[i])
+                del_indices.append(i)
+
+                continue
+
+        feature_names = [name for j, name in enumerate(feature_names) if j not in del_indices] #keep non-deleted names
+        X = np.delete(X,del_indices,1) #by passing a list we can delete multiple columns of an an np array
+        X = X[~np.isnan(X).any(axis=1)] # clear all rows with at least one nan
+
+    if __name__ == "__main__":
+        print("Clean data dimensions: {}".format(X.shape))
+
 
     def nans_to_mean(data):
         """ Replaces all naNs with the mean value
@@ -31,56 +54,35 @@ def read_data(filepath, replace_nan, scale):
         data[inds] = mean
         return data
 
-    def nans_to_zero(data):
-        """ Replaces all naNs with zero
-
-        INPUT: data -> An array containing naNs
-
-        OUTPUT: The array with zero instead of naNs
-        """
-
-        inds = np.where(np.isnan(data))
-        data[inds] = 0
-        return data
-
-    # clear the data of naNs
-    if replace_nan:
-        for i,feature in enumerate(X.T):
-
-            if not np.isfinite(feature).any(): #if all values are naNs drop it cause it creates problems
-                if __name__ == "__main__":
-                    print("Dropping variable: {}".format(feature_names[i]))
-                del feature_names[i]
-                continue
-            if not np.isfinite(feature).all():
-                new_feature = nans_to_mean(feature)
-                X[:,i] = new_feature
 
     # scale the data to avoid problems in training
     if scale:
-        scaler = MinMaxScaler((-1,1))
+        scaler = StandardScaler()
         scaler.fit(X)
         X = scaler.transform(X)
 
-    return feature_names, X
+    return feature_names, X, droped_features
 
 
 
 
-
-# for debugging
 if __name__ == "__main__":
+    # for debugging
     import numpy as np
 
-    headers, clear_X = read_data("Agias-Sofias_2018.csv", True, True)
+    # headers, clear_X, droped = read_data("Agias-Sofias_2018.csv", True, True)
+    headers, clear_X, droped = read_data("Auth_2018.csv", True, True)
+
+
     print(headers)
-    print(clear_X[:,0]) # this will be a training point
+    print(len(clear_X[:,0])) # this will be a training point
+    print("Dropped features: {}".format(droped))
 
     count = 0
     for i,data in enumerate(clear_X):
         for j,x in enumerate(data):
             x = float(x)
             if not np.isfinite(x):
-                print(i,j,x)
+                # print(i,j,x)
                 count += 1
     print("\n{} naNs in the data".format(count))

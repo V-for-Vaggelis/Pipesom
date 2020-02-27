@@ -53,6 +53,7 @@ def analyze_som(labels, data):
 # for debugging
 from data_reader import read_data
 
-headers, clear_X = read_data("Agias-Sofias_2018.csv", True, True)
-# headers, clear_X = read_data("Auth_2018.csv", True, True)
+headers, clear_X, droped = read_data("Agias-Sofias_2018.csv", True, True)
+# headers, clear_X, droped = read_data("Auth_2018.csv", True, True)
+
 analyze_som(headers, clear_X)
