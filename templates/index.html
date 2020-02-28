@@ -6,8 +6,20 @@
 </head>
 <body>
   <p>Welcome to Pipesom, upload your data file and then submit it to get an analysis:</p>
+  <p>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul class=flashes>
+      {% for message in messages %}
+      <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+  </p>
+  
   <!-- TODO: specify the action on the flask server -->
-  <form action="">
+  <form action="/" method="post" enctype="multipart/form-data">
     <input type="file" id="myFile" name="filename">
     <input type="submit">
   </form>
