@@ -11,6 +11,13 @@ def analyze_som(labels, data):
     import matplotlib.pyplot as plt
     from minisom import MiniSom
     import io
+    import time
+
+    # get current_time to use as file name extension, this will help in caching
+    t = time.localtime()
+    current_time = time.strftime("%H:%M:%S", t)
+    time = current_time.replace(":", "-")
+
 
     # train the network
     # TODO: maybe allow the user to request more complex parameters for the network
@@ -38,22 +45,24 @@ def analyze_som(labels, data):
     plt.tight_layout()
 
     # will save the image so it can be used directly by flask API
-    bytes_image = io.BytesIO()
-    plt.savefig(bytes_image, format='png', bbox_inches='tight')
-    bytes_image.seek(0)
-    # plt.savefig("planes.png", bbox_inches='tight')
+    # bytes_image = io.BytesIO()
+    # plt.savefig(bytes_image, format='png', bbox_inches='tight')
+    # bytes_image.seek(0)
+    plt.savefig("static/planes-{}.png".format(time), bbox_inches='tight')
 
     if __name__ == "__main__":
         plt.show()
 
-    return bytes_image
+    plt.close("all")
+
+    # return bytes_image
 
 
+if __name__ == "__main__":
+    # for debugging
+    from data_reader import read_data
 
-# for debugging
-from data_reader import read_data
+    headers, clear_X, droped = read_data("Agias-Sofias_2018.csv", True, True)
+    # headers, clear_X, droped = read_data("Auth_2018.csv", True, True)
 
-headers, clear_X, droped = read_data("Agias-Sofias_2018.csv", True, True)
-# headers, clear_X, droped = read_data("Auth_2018.csv", True, True)
-
-analyze_som(headers, clear_X)
+    analyze_som(headers, clear_X)

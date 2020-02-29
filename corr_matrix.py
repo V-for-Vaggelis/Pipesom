@@ -13,6 +13,12 @@ def corr_mat(labels, values):
     import matplotlib.pyplot as plt
     import numpy as np
     import io
+    import time
+
+    # get current_time to use as file name extension, this will help in caching
+    t = time.localtime()
+    current_time = time.strftime("%H:%M:%S", t)
+    time = current_time.replace(":", "-")
 
     Data = dict(zip(labels, values.T)) #creates a dictionary in one line
     # print(Data)
@@ -23,20 +29,22 @@ def corr_mat(labels, values):
     sn.heatmap(corrMatrix, annot=True)
     plt.tight_layout()
 
-    bytes_image = io.BytesIO()
-    plt.savefig(bytes_image, format='png', bbox_inches='tight')
-    bytes_image.seek(0)
+    # bytes_image = io.BytesIO()
+    # plt.savefig(bytes_image, format='png', bbox_inches='tight')
+    # bytes_image.seek(0)
+    plt.savefig("static/corr-{}.png".format(time), bbox_inches='tight')
 
     if __name__ == "__main__":
         plt.show()
 
-    return bytes_image
+    plt.close("all")
+    # return bytes_image
 
 
+if __name__ == "__main__":
+    # for-debugging
+    from data_reader import read_data
 
-# for-debugging
-from data_reader import read_data
-
-# headers, clear_X = read_data("Agias-Sofias_2018.csv", False, False)
-headers, clear_X, _ = read_data("Auth_2018.csv", False, False)
-img = corr_mat(headers, clear_X)
+    # headers, clear_X = read_data("Agias-Sofias_2018.csv", False, False)
+    headers, clear_X, _ = read_data("Auth_2018.csv", False, False)
+    corr_mat(headers, clear_X)
