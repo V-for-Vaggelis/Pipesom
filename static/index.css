@@ -1,0 +1,11 @@
+footer {
+  padding-top: 1vh;
+  padding-bottom: 1vh;
+  background-color: rgb(196, 186, 189);
+  text-align: center;
+  float: bottom;
+}
+
+body {
+  text-align: center;
+}
