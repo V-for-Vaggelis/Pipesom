@@ -52,8 +52,8 @@ def analyze_som(labels, data):
 
     if __name__ == "__main__":
         plt.show()
-
-    plt.close("all")
+    else:
+        plt.close("all")
 
     # return bytes_image
 

@@ -20,13 +20,19 @@ def corr_mat(labels, values):
     current_time = time.strftime("%H:%M:%S", t)
     time = current_time.replace(":", "-")
 
+    # labels_new = [label[0:6] + "..." if len(label)>6 else label for label in labels]
+
     Data = dict(zip(labels, values.T)) #creates a dictionary in one line
     # print(Data)
 
     df = DataFrame(Data, columns=labels)
 
-    corrMatrix = df.corr()
+    feat_num = len(labels)
+
+    plt.figure(figsize=(feat_num,feat_num/2))
+    corrMatrix = df.corr().round(2)
     sn.heatmap(corrMatrix, annot=True)
+
     plt.tight_layout()
 
     # bytes_image = io.BytesIO()
@@ -36,8 +42,8 @@ def corr_mat(labels, values):
 
     if __name__ == "__main__":
         plt.show()
-
-    plt.close("all")
+    else:
+        plt.close("all")
     # return bytes_image
 
 
@@ -45,6 +51,6 @@ if __name__ == "__main__":
     # for-debugging
     from data_reader import read_data
 
-    # headers, clear_X = read_data("Agias-Sofias_2018.csv", False, False)
-    headers, clear_X, _ = read_data("Auth_2018.csv", False, False)
+    headers, clear_X, _ = read_data("Agias-Sofias_2018.csv", False, False)
+    # headers, clear_X, _ = read_data("Auth_2018.csv", False, False)
     corr_mat(headers, clear_X)

@@ -3,7 +3,10 @@ footer {
   padding-bottom: 1vh;
   background-color: rgb(196, 186, 189);
   text-align: center;
-  float: bottom;
+}
+
+ul {
+  list-style-type: none;
 }
 
 body {
